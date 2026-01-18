@@ -190,7 +190,7 @@ function PlayGame() {
     class Player {
         constructor(x, isP2, assets) {
             this.x = x; this.width = 125; this.height = 150;
-            this.defaultDy = canvas.height - this.height - 30;
+            this.defaultDy = canvas.height - this.height - 10;
             this.y = this.defaultDy;
             this.isP2 = isP2;
             this.flip = false;
@@ -220,6 +220,10 @@ function PlayGame() {
                 img = this.assets.walk[this.walkFrame];
             }
             c.drawImage(img, 0, 0, this.width, this.height);
+            if (this.frozen) {
+                c.fillStyle = "rgba(0, 191, 255, 0.4)";
+                c.fillRect(0, 0, this.width, this.height);
+            }
             c.restore();
         }
         update() {
@@ -239,16 +243,32 @@ function PlayGame() {
 
     class Ball {
         constructor() { this.reset(); this.radius = 24; this.gravity = 0.4; this.frozen = false; }
-        draw() { c.drawImage(ballImg, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2); }
+        draw() {
+            if (this.radius > 24) {
+                c.save();
+                c.shadowBlur = 20;
+                c.shadowColor = "#f97316";
+                c.drawImage(ballImg, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
+                c.restore();
+            } else if (this.radius < 24) {
+                c.save();
+                c.shadowBlur = 15;
+                c.shadowColor = "#0ea5e9";
+                c.drawImage(ballImg, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
+                c.restore();
+            } else {
+                c.drawImage(ballImg, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
+            }
+        }
         update() {
             if (this.frozen) return;
             this.vy += this.gravity; this.x += this.vx; this.y += this.vy;
             this.vx *= 0.993;
-            if (this.y + this.radius > 570) { this.y = 570 - this.radius; this.vy *= -0.7; }
+            if (this.y + this.radius > 570) { this.y = 570 - this.radius; this.vy *= -0.8; }
             if (this.x - this.radius < 0) { this.x = this.radius; this.vx *= -0.8; }
             if (this.x + this.radius > 1200) { this.x = 1200 - this.radius; this.vx *= -0.8; }
-            if (this.x < 50 && this.y > 450) { score2++; document.getElementById("score2").textContent = score2; this.reset(); if (suddenDeath) EndGame(); }
-            else if (this.x > 1150 && this.y > 450) { score1++; document.getElementById("score1").textContent = score1; this.reset(); if (suddenDeath) EndGame(); }
+            if (this.x < 50 && this.y > 470) { score2++; document.getElementById("score2").textContent = score2; this.reset(); if (suddenDeath) EndGame(); }
+            else if (this.x > 1150 && this.y > 470) { score1++; document.getElementById("score1").textContent = score1; this.reset(); if (suddenDeath) EndGame(); }
         }
         reset() { this.x = 600; this.y = 250; this.vx = 0; this.vy = 0; }
         collideWith(p) {
@@ -257,7 +277,7 @@ function PlayGame() {
             let dist = Math.sqrt(dx * dx + dy * dy);
             if (dist < this.radius + 42) {
                 let angle = Math.atan2(dy, dx);
-                let power = p.kickcon ? 17 : 9.5;
+                let power = p.kickcon ? 22 : 14;
                 this.vx = Math.cos(angle) * power;
                 this.vy = Math.sin(angle) * power - 2;
                 this.x = pCenter.x + Math.cos(angle) * (this.radius + 48);
@@ -273,7 +293,7 @@ function PlayGame() {
         }
         draw() { if (this.active) c.drawImage(itemImgs[this.type], this.x, this.y, this.w, this.h); }
         update(b) {
-            if (!this.active) return; this.y += this.vy; if (this.y > 450) this.active = false;
+            if (!this.active) return; this.y += this.vy; if (this.y > 480) this.active = false;
             let dx = b.x - (this.x + this.w / 2); let dy = b.y - (this.y + this.h / 2);
             if (Math.sqrt(dx * dx + dy * dy) < b.radius + 20) {
                 this.active = false;
@@ -289,18 +309,18 @@ function PlayGame() {
 
     class Goal {
         constructor(x, side) {
-            this.x = x; this.y = 320; this.w = 150; this.h = 230;
+            this.x = x; this.y = 340; this.w = 150; this.h = 230;
             this.img = new Image();
             this.img.src = side === 1 ? "source/Goal - Side.png" : "source/Goal - Side2.png";
         }
         draw() { c.drawImage(this.img, this.x, this.y, this.w, this.h); }
     }
 
+    let goalLeft = new Goal(0, 1);
+    let goalRight = new Goal(1050, 2);
     let p1 = new Player(150, false, p1Assets);
     let p2 = new Player(925, true, p2Assets);
     let ball = new Ball();
-    let goalLeft = new Goal(0, 1);
-    let goalRight = new Goal(1050, 2);
     let itemsList = [];
 
     window.itemInterval = setInterval(() => {
@@ -311,9 +331,6 @@ function PlayGame() {
         if (isGameOver) return;
         window.gameAnimationId = requestAnimationFrame(animate);
         c.clearRect(0, 0, canvas.width, canvas.height);
-
-        c.fillStyle = 'rgba(34, 139, 34, 0.8)';
-        c.fillRect(0, 570, canvas.width, 30);
 
         goalLeft.draw();
         goalRight.draw();
