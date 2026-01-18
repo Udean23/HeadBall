@@ -193,7 +193,7 @@ function PlayGame() {
             this.defaultDy = canvas.height - this.height - 30;
             this.y = this.defaultDy;
             this.isP2 = isP2;
-            this.flip = isP2;
+            this.flip = false;
             this.assets = assets;
             this.walkFrame = 0; this.walkCounter = 0;
             this.forwardcon = false; this.backwardcon = false; this.jumpcon = false; this.kickcon = false; this.downcon = true;
