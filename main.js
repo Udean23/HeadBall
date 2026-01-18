@@ -34,8 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
     team1Select.addEventListener('change', checkInputs);
     team2Select.addEventListener('change', checkInputs);
     levelSelect.addEventListener('change', checkInputs);
-
-    ShowInstruction();
 });
 
 function PlayGame() {
