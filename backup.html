@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Head Ball - LKS 2023</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+    --bg-dark: #0f172a;
+    --card-bg: #1e293b;
+    --accent-orange: #f97316;
+    --accent-blue: #0ea5e9;
+    --accent-green: #22c55e;
+    --text-white: #f8fafc;
+    --text-dim: #94a3b8;
+    --digital-yellow: #fde047;
+    --font-main: 'Outfit', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--font-main);
+}
+
+body {
+    overflow: hidden;
+    height: 100dvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+}
+
+#game {
+    position: relative;
+    width: 1200px;
+    height: 600px;
+    background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.9)), url('source/background2.jpg');
+    background-size: cover;
+    background-position: center;
+    display: none;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    border: 4px solid var(--card-bg);
+}
+
+.vibrant-welcome p { display: none; }
+
+.vibrant-welcome {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 900px;
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 32px;
+    text-align: center;
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+    z-index: 100;
+}
+
+.vibrant-game-title {
+    font-size: 80px;
+    font-weight: 900;
+    letter-spacing: -2px;
+    margin-bottom: 30px;
+    color: var(--accent-blue);
+    text-shadow: 0 4px 0px #0369a1;
+}
+
+.vibrant-game-title span {
+    color: var(--accent-orange);
+    text-shadow: 0 4px 0px #c2410c;
+}
+
+.vibrant-settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.settings-card {
+    background: rgba(15, 23, 42, 0.5);
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.settings-card h3 {
+    font-size: 14px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 15px;
+}
+
+.vibrant-input-group input {
+    background: var(--bg-dark);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 12px;
+    color: white;
+    font-weight: 700;
+    text-align: center;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.vibrant-select {
+    background: var(--bg-dark);
+    color: white;
+    padding: 12px;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+}
+
+.vibrant-radio-group { display: flex; justify-content: center; gap: 20px; }
+.ball-choice { cursor: pointer; padding: 10px; border-radius: 12px; background: var(--bg-dark); border: 2px solid transparent; }
+.ball-choice:has(input:checked) { border-color: var(--accent-orange); background: rgba(249, 115, 22, 0.1); }
+.ball-choice input { display: none; }
+
+.vibrant-btn {
+    padding: 15px 30px;
+    border-radius: 14px;
+    border: none;
+    color: white;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 16px;
+    margin: 5px;
+}
+.btn-blue { background: var(--accent-blue); box-shadow: 0 4px 0 #0369a1; }
+.btn-orange { background: var(--accent-orange); box-shadow: 0 4px 0 #c2410c; }
+.btn-green { background: var(--accent-green); box-shadow: 0 4px 0 #15803d; }
+.vibrant-btn:active { transform: translateY(2px); box-shadow: none; }
+.vibrant-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.hud-vibrant {
+    position: absolute;
+    top: 20px;
+    left: 40px;
+    right: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 50;
+}
+
+.hud-left, .hud-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(30, 41, 59, 0.8);
+    padding: 10px 20px;
+    border-radius: 60px;
+    border: 2px solid rgba(255,255,255,0.05);
+}
+
+.avatar-frame { width: 70px; height: 70px; border-radius: 50%; border: 3px solid var(--accent-blue); overflow: hidden; }
+.hud-right .avatar-frame { border-color: var(--accent-orange); }
+.avatar-frame img { width: 100%; height: 100%; object-fit: cover; }
+
+.hud-score-display { font-size: 32px; font-weight: 900; }
+.hud-name { font-size: 14px; color: var(--text-dim); }
+
+.digital-timer {
+    background: #000;
+    padding: 10px 30px;
+    border-radius: 12px;
+    border: 3px solid #334155;
+    text-align: center;
+}
+
+#timeroutput { font-size: 32px; font-family: monospace; color: var(--digital-yellow); text-shadow: 0 0 10px rgba(253, 224, 71, 0.5); }
+
+.modal-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--card-bg);
+    border-radius: 24px;
+    padding: 30px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    z-index: 500;
+    display: none;
+}
+
+.vibrant-modal { border: 3px solid rgba(255,255,255,0.05); text-align: center; }
+.vibrant-modal h2 { font-size: 40px; font-weight: 900; color: var(--accent-blue); margin-bottom: 20px; }
+
+.close-btn { 
+    position: absolute; 
+    top: 15px; 
+    right: 15px; 
+    background: var(--bg-dark); 
+    border: none; 
+    color: white; 
+    border-radius: 50%; 
+    width: 40px; 
+    height: 40px; 
+    cursor: pointer; 
+    font-size: 20px;
+}
+
+.control {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 30px;
+}
+
+.control-group h3 {
+    margin-bottom: 10px;
+    color: var(--accent-orange);
+    font-size: 18px;
+}
+
+.control-group p {
+    font-weight: 400;
+    color: var(--text-dim);
+    margin: 5px 0;
+}
+
+.control-group p span {
+    font-weight: 900;
+    color: var(--accent-blue);
+}
+
+.control-separator {
+    width: 2px;
+    background: rgba(255,255,255,0.05);
+}
+
+.items-guide {
+    background: rgba(15, 23, 42, 0.5);
+    padding: 15px;
+    border-radius: 16px;
+}
+
+.items-guide h3 {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+}
+
+.item-list { 
+    display: flex; 
+    justify-content: center; 
+    gap: 30px; 
+}
+
+.item-help { 
+    font-size: 12px; 
+    font-weight: 700; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+}
+
+.vibrant-countdown {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 120px;
+    font-weight: 900;
+    color: var(--accent-orange);
+    z-index: 1000;
+    display: none;
+}
+
+#canvas { background: transparent; cursor: none; }
+    </style>
+</head>
+<body>
+    <div id="gamemenu" class="vibrant-welcome">
+        <h1 class="vibrant-game-title">HEAD<span>BALL</span></h1>
+        
+        <div class="vibrant-settings-grid">
+            <div class="settings-card card-players">
+                <h3>PLAYER NAMES</h3>
+                <div class="vibrant-input-group">
+                    <input type="text" id="username1" placeholder="PLAYER 1 NAME">
+                    <input type="text" id="username2" placeholder="PLAYER 2 NAME">
+                </div>
+            </div>
+
+            <div class="settings-card card-teams">
+                <h3>CHOOSING TEAM</h3>
+                <div class="vibrant-country-selection">
+                    <div class="country-pick">
+                        <span>P1</span>
+                        <select id="team1" class="vibrant-select">
+                            <option value="">SELECT TEAM</option>
+                            <option value="1">Brazil</option>
+                            <option value="2">England</option>
+                            <option value="3">Germany</option>
+                            <option value="4">Italy</option>
+                            <option value="5">Japan</option>
+                            <option value="6">Netherlands</option>
+                            <option value="7">Portugal</option>
+                            <option value="8">Spain</option>
+                        </select>
+                    </div>
+                    <div class="country-pick">
+                        <span>P2</span>
+                        <select id="team2" class="vibrant-select">
+                            <option value="">SELECT TEAM</option>
+                            <option value="1">Brazil</option>
+                            <option value="2">England</option>
+                            <option value="3">Germany</option>
+                            <option value="4">Italy</option>
+                            <option value="5">Japan</option>
+                            <option value="6">Netherlands</option>
+                            <option value="7">Portugal</option>
+                            <option value="8">Spain</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-card card-difficulty">
+                <h3>DIFFICULTY</h3>
+                <select id="level" class="vibrant-select full-width">
+                    <option value="">SELECT LEVEL</option>
+                    <option value="EASY">EASY (30S)</option>
+                    <option value="MEDIUM">MEDIUM (20S)</option>
+                    <option value="HARD">HARD (15S)</option>
+                </select>
+            </div>
+
+            <div class="settings-card card-ball">
+                <h3>BALL SKIN</h3>
+                <div class="vibrant-radio-group">
+                    <label class="ball-choice">
+                        <input type="radio" name="ball" value="1" checked>
+                        <img src="source/Ball 01.png" width="40" alt="Ball 1">
+                    </label>
+                    <label class="ball-choice">
+                        <input type="radio" name="ball" value="2">
+                        <img src="source/Ball 02.png" width="40" alt="Ball 2">
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="vibrant-actions">
+            <button class="vibrant-btn btn-blue" onclick="ShowInstruction()">INSTRUCTIONS</button>
+            <button class="vibrant-btn btn-orange main-cta" id="playBtn" onclick="PlayGame()" disabled>PLAY GAME</button>
+            <button class="vibrant-btn btn-green" onclick="ShowHistory()">MATCH HISTORY</button>
+        </div>
+    </div>
+
+    <div id="instruction" class="modal-box vibrant-modal">
+        <h2 class="vibrant-title">HOW TO PLAY</h2>
+        <button class="close-btn" onclick="HideInstruction()">×</button>
+        <div class="control">
+            <div class="control-group">
+                <h3>PLAYER 1</h3>
+                <p>MOVE: <span>W, A, S, D</span></p>
+                <p>KICK: <span>SPACE</span></p>
+            </div>
+            <div class="control-separator"></div>
+            <div class="control-group">
+                <h3>PLAYER 2</h3>
+                <p>MOVE: <span>ARROWS</span></p>
+                <p>KICK: <span>ENTER</span></p>
+            </div>
+        </div>
+        <div class="items-guide">
+            <h3>POWER-UPS</h3>
+            <div class="item-list">
+                <div class="item-help"><img src="source/Increase Ball.png" width="20"> SIZE UP</div>
+                <div class="item-help"><img src="source/Decrease Ball.png" width="20"> SIZE DOWN</div>
+                <div class="item-help"><img src="source/Diamond Ice.png" width="20"> FREEZE</div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="game">
+        <div class="hud-vibrant">
+            <div class="hud-left">
+                <div class="avatar-frame">
+                    <img src="source/Flag/Brazil.png" alt="flag1" id="flag1">
+                </div>
+                <div class="hud-info">
+                    <div id="p1name" class="hud-name">PLAYER 1</div>
+                    <div class="hud-score-display" id="score1">0</div>
+                </div>
+            </div>
+
+            <div class="hud-center-timer">
+                <div class="digital-timer">
+                    <div class="timer-label">TIME</div>
+                    <div id="timeroutput">00:00</div>
+                </div>
+            </div>
+
+            <div class="hud-right">
+                <div class="hud-info">
+                    <div id="p2name" class="hud-name">PLAYER 2</div>
+                    <div class="hud-score-display" id="score2">0</div>
+                </div>
+                <div class="avatar-frame">
+                    <img src="source/Flag/England.png" alt="flag2" id="flag2">
+                </div>
+            </div>
+        </div>
+
+        <canvas id="canvas" width="1200" height="450"></canvas>
+        
+        <div id="countdown" class="vibrant-countdown">3</div>
+
+        <div id="pause-menu" class="modal-box vibrant-modal">
+            <h2>PAUSED</h2>
+            <button class="vibrant-btn btn-orange" onclick="ResumeGame()">CONTINUE</button>
+        </div>
+
+        <div id="gameover" class="modal-box vibrant-modal">
+            <h2>GAME OVER</h2>
+            <div class="gameover-stats">
+                <div class="stat-row">WINNER: <span id="winner-name" class="highlight">NAME</span></div>
+                <div class="stat-row">SCORE: <span id="final-score" class="highlight">0 - 0</span></div>
+                <div class="stat-row">MATCH: <span id="final-countries" class="highlight">A vs B</span></div>
+            </div>
+            <div class="modal-actions">
+                <button class="vibrant-btn btn-green" onclick="SaveScore()">SAVE SCORE</button>
+                <button class="vibrant-btn btn-orange" onclick="location.reload()">PLAY AGAIN</button>
+                <button class="vibrant-btn btn-blue" onclick="ShowHistory()">HISTORY</button>
+            </div>
+        </div>
+
+        <div id="match-history" class="modal-box vibrant-modal history-modal">
+            <h2>MATCH HISTORY</h2>
+            <button class="close-btn" onclick="CloseHistory()">×</button>
+            <div class="history-controls">
+                <label>SORT BY:</label>
+                <select id="history-sort" class="vibrant-select" onchange="RenderHistory()">
+                    <option value="date">NEWEST FIRST</option>
+                    <option value="score">HIGHEST SCORE</option>
+                </select>
+            </div>
+            <div class="history-table-wrapper">
+                <table id="history-table">
+                    <thead>
+                        <tr>
+                            <th>DATE</th>
+                            <th>WINNER</th>
+                            <th>SCORE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-list"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        function ShowInstruction() {
+    document.getElementById('instruction').style.display = 'block';
+}
+
+function HideInstruction() {
+    document.getElementById('instruction').style.display = 'none';
+}
+
+let currentKeyDownListener = null;
+let currentKeyUpListener = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+    const p1Input = document.getElementById('username1');
+    const p2Input = document.getElementById('username2');
+    const playBtn = document.getElementById('playBtn');
+    const team1Select = document.getElementById('team1');
+    const team2Select = document.getElementById('team2');
+    const levelSelect = document.getElementById('level');
+
+    function checkInputs() {
+        if (p1Input.value.trim() !== "" &&
+            p2Input.value.trim() !== "" &&
+            team1Select.value !== "" &&
+            team2Select.value !== "" &&
+            levelSelect.value !== "") {
+            playBtn.disabled = false;
+        } else {
+            playBtn.disabled = true;
+        }
+    }
+
+    p1Input.addEventListener('input', checkInputs);
+    p2Input.addEventListener('input', checkInputs);
+    team1Select.addEventListener('change', checkInputs);
+    team2Select.addEventListener('change', checkInputs);
+    levelSelect.addEventListener('change', checkInputs);
+
+    ShowInstruction();
+});
+
+function PlayGame() {
+    if (window.gameAnimationId) cancelAnimationFrame(window.gameAnimationId);
+    if (window.gameTimerInterval) clearInterval(window.gameTimerInterval);
+    if (window.itemInterval) clearInterval(window.itemInterval);
+
+    document.getElementById('gamemenu').style.display = 'none';
+    document.getElementById('canvas').style.display = 'block';
+    document.getElementById('game').style.display = 'block';
+
+    let Username1 = document.getElementById("username1").value;
+    let Username2 = document.getElementById("username2").value;
+    let ballChoice = document.querySelector('input[name="ball"]:checked').value;
+
+    let score1 = 0;
+    let score2 = 0;
+    let isPaused = false;
+    let suddenDeath = false;
+    let isGameOver = false;
+    let gameStarted = false;
+
+    let countdownEl = document.getElementById('countdown');
+    let countdownVal = 3;
+    let countdownInterval;
+
+    var r = document.getElementById("level");
+    var level = r.value;
+    let seconds = 30;
+    if (level == 'MEDIUM') seconds = 20;
+    if (level == 'HARD') seconds = 15;
+
+    let counterDisplay = document.getElementById('timeroutput');
+    document.getElementById("p1name").textContent = Username1;
+    document.getElementById("p2name").textContent = Username2;
+    document.getElementById("score1").textContent = score1;
+    document.getElementById("score2").textContent = score2;
+
+    var team1 = document.getElementById("team1").value;
+    var team2 = document.getElementById("team2").value;
+
+    const flagPaths = {
+        1: 'source/Flag/Brazil.png', 2: 'source/Flag/England.png',
+        3: 'source/Flag/Germany.png', 4: 'source/Flag/Italy.png',
+        5: 'source/Flag/Japan.png', 6: 'source/Flag/Netherlands.png',
+        7: 'source/Flag/Portugal.png', 8: 'source/Flag/Spain.png'
+    };
+
+    document.getElementById('flag1').src = flagPaths[team1] || flagPaths[1];
+    document.getElementById('flag2').src = flagPaths[team2] || flagPaths[2];
+
+    function updateTimerDisplay() {
+        if (suddenDeath) {
+            counterDisplay.textContent = "S.D.";
+            return;
+        }
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        counterDisplay.textContent = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+    updateTimerDisplay();
+
+    function startCounter() {
+        if (window.gameTimerInterval) clearInterval(window.gameTimerInterval);
+        window.gameTimerInterval = setInterval(() => {
+            if (!isPaused && !isGameOver && gameStarted) {
+                seconds--;
+                updateTimerDisplay();
+                if (seconds <= 0) {
+                    seconds = 0;
+                    if (score1 !== score2) {
+                        EndGame();
+                    } else {
+                        suddenDeath = true;
+                        updateTimerDisplay();
+                    }
+                }
+            }
+        }, 1000);
+    }
+
+    window.ResumeGame = function () {
+        if (!isPaused) return;
+        isPaused = false;
+        document.getElementById('pause-menu').style.display = 'none';
+        gameStarted = false;
+        countdownVal = 3;
+        countdownEl.style.display = 'block';
+        countdownEl.innerText = countdownVal;
+        countdownInterval = setInterval(() => {
+            countdownVal--;
+            if (countdownVal > 0) {
+                countdownEl.innerText = countdownVal;
+            } else if (countdownVal === 0) {
+                countdownEl.innerText = "GO!";
+            } else {
+                clearInterval(countdownInterval);
+                countdownEl.style.display = 'none';
+                gameStarted = true;
+            }
+        }, 1000);
+    };
+
+    window.SaveScore = function () {
+        let history = JSON.parse(localStorage.getItem('headball_history')) || [];
+        let winnerName = score1 > score2 ? Username1 : Username2;
+        if (score1 === score2) winnerName = "Draw";
+        history.push({
+            date: new Date().toLocaleString(),
+            winner: winnerName,
+            score: Math.max(score1, score2),
+            details: `${score1} - ${score2}`,
+            timestamp: Date.now()
+        });
+        localStorage.setItem('headball_history', JSON.stringify(history));
+        alert('Match result saved!');
+    };
+
+    function EndGame() {
+        isGameOver = true;
+        if (window.gameTimerInterval) clearInterval(window.gameTimerInterval);
+        if (window.itemInterval) clearInterval(window.itemInterval);
+        document.getElementById('gameover').style.display = 'block';
+        let winName = score1 > score2 ? Username1 : Username2;
+        document.getElementById('winner-name').textContent = winName;
+        document.getElementById('final-score').textContent = `${score1} - ${score2}`;
+        const countryMap = { "1": "Brazil", "2": "England", "3": "Germany", "4": "Italy", "5": "Japan", "6": "Netherlands", "7": "Portugal", "8": "Spain" };
+        document.getElementById('final-countries').textContent = `${countryMap[team1] || team1} vs ${countryMap[team2] || team2}`;
+    }
+
+    var canvas = document.getElementById("canvas");
+    var c = canvas.getContext("2d");
+
+    var countries = ['Brazil', 'England', 'Germany', 'Italy', 'Japan', 'Netherlands', 'Portugal', 'Spain'];
+    var p1folder = "source/Characters/p1/" + (countries[team1 - 1] || countries[0]) + "/";
+    var p2folder = "source/Characters/p2/" + (countries[team2 - 1] || countries[0]) + "/";
+
+    var ballImg = new Image();
+    ballImg.src = ballChoice == 1 ? "source/Ball 01.png" : "source/Ball 02.png";
+
+    function loadCharImages(folder) {
+        let idle = new Image(); idle.src = folder + "Idle/Idle_000.png";
+        let walk = []; for (let i = 0; i <= 9; i++) { let img = new Image(); img.src = folder + `Move Forward/Move Forward_00${i}.png`; walk.push(img); }
+        let jump = new Image(); jump.src = folder + "Jump/Jump_000.png";
+        let kick = new Image(); kick.src = folder + "Kick/Kick_000.png";
+        return { idle, walk, jump, kick };
+    }
+    let p1Assets = loadCharImages(p1folder);
+    let p2Assets = loadCharImages(p2folder);
+
+    var itemImgs = { increase: new Image(), decrease: new Image(), freeze: new Image() };
+    itemImgs.increase.src = "source/Increase Ball.png"; itemImgs.decrease.src = "source/Decrease Ball.png"; itemImgs.freeze.src = "source/Diamond Ice.png";
+
+    class Player {
+        constructor(x, flip, assets) {
+            this.x = x; this.y = 300; this.width = 100; this.height = 120;
+            this.flip = flip; this.assets = assets;
+            this.walkFrame = 0; this.walkCounter = 0;
+            this.forwardcon = false; this.backwardcon = false; this.jumpcon = false; this.kickcon = false; this.downcon = false;
+            this.vy = 0; this.gravity = 0.5; this.jumpPower = -12;
+        }
+        draw() {
+            c.save();
+            if (this.flip) {
+                c.translate(this.x + this.width, this.y);
+                c.scale(-1, 1);
+            } else {
+                c.translate(this.x, this.y);
+            }
+            let img = this.assets.idle;
+            if (this.kickcon) img = this.assets.kick;
+            else if (!this.downcon) img = this.assets.jump;
+            else if (this.forwardcon || this.backwardcon) {
+                this.walkCounter++;
+                if (this.walkCounter > 4) {
+                    this.walkCounter = 0;
+                    this.walkFrame = (this.walkFrame + 1) % this.assets.walk.length;
+                }
+                img = this.assets.walk[this.walkFrame];
+            }
+            c.drawImage(img, 0, 0, this.width, this.height);
+            c.restore();
+        }
+        update() {
+            if (this.forwardcon) this.x += this.flip ? -6 : 6;
+            if (this.backwardcon) this.x += this.flip ? 6 : -6;
+            if (this.jumpcon && this.downcon) { this.vy = this.jumpPower; this.downcon = false; this.jumpcon = false; }
+            this.vy += this.gravity; this.y += this.vy;
+            if (this.y >= 300) { this.y = 300; this.vy = 0; this.downcon = true; }
+            if (this.x < 0) this.x = 0; if (this.x > 1100) this.x = 1100;
+        }
+    }
+
+    class Ball {
+        constructor() { this.reset(); this.radius = 25; this.gravity = 0.35; this.frozen = false; }
+        draw() { c.drawImage(ballImg, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2); }
+        update() {
+            if (this.frozen) return;
+            this.vy += this.gravity; this.x += this.vx; this.y += this.vy;
+            this.vx *= 0.993;
+            if (this.y + this.radius > 420) { this.y = 420 - this.radius; this.vy *= -0.7; }
+            if (this.x - this.radius < 0) { this.x = this.radius; this.vx *= -0.8; }
+            if (this.x + this.radius > 1200) { this.x = 1200 - this.radius; this.vx *= -0.8; }
+            if (this.x < 50 && this.y > 320) { score2++; document.getElementById("score2").textContent = score2; this.reset(); if (suddenDeath) EndGame(); }
+            else if (this.x > 1150 && this.y > 320) { score1++; document.getElementById("score1").textContent = score1; this.reset(); if (suddenDeath) EndGame(); }
+        }
+        reset() { this.x = 600; this.y = 50; this.vx = 0; this.vy = 0; }
+        collideWith(p) {
+            let pCenter = { x: p.x + p.width / 2, y: p.y + p.height / 2 };
+            let dx = this.x - pCenter.x; let dy = this.y - pCenter.y;
+            let dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < this.radius + 45) {
+                let angle = Math.atan2(dy, dx);
+                let power = p.kickcon ? 16 : 9;
+                this.vx = Math.cos(angle) * power;
+                this.vy = Math.sin(angle) * power - 2;
+                this.x = pCenter.x + Math.cos(angle) * (this.radius + 50);
+                this.y = pCenter.y + Math.sin(angle) * (this.radius + 50);
+            }
+        }
+    }
+
+    class Item {
+        constructor() {
+            this.x = Math.random() * 800 + 200; this.y = -40; this.w = 40; this.h = 40; this.vy = 3;
+            let t = ['increase', 'decrease', 'freeze']; this.type = t[Math.floor(Math.random() * 3)]; this.active = true;
+        }
+        draw() { if (this.active) c.drawImage(itemImgs[this.type], this.x, this.y, this.w, this.h); }
+        update(b) {
+            if (!this.active) return; this.y += this.vy; if (this.y > 450) this.active = false;
+            let dx = b.x - (this.x + this.w / 2); let dy = b.y - (this.y + this.h / 2);
+            if (Math.sqrt(dx * dx + dy * dy) < b.radius + 20) {
+                this.active = false;
+                if (this.type === 'increase') { b.radius = 40; setTimeout(() => b.radius = 25, 4000); }
+                else if (this.type === 'decrease') { b.radius = 15; setTimeout(() => b.radius = 25, 4000); }
+                else if (this.type === 'freeze') { b.frozen = true; setTimeout(() => b.frozen = false, 3000); }
+            }
+        }
+    }
+
+    let p1 = new Player(150, false, p1Assets);
+    let p2 = new Player(950, true, p2Assets);
+    let ball = new Ball();
+    let itemsList = [];
+
+    window.itemInterval = setInterval(() => {
+        if (!isPaused && !isGameOver && gameStarted) itemsList.push(new Item());
+    }, 5000);
+
+    function animate() {
+        if (isGameOver) return;
+        window.gameAnimationId = requestAnimationFrame(animate);
+        c.clearRect(0, 0, canvas.width, canvas.height);
+
+        c.fillStyle = 'rgba(34, 139, 34, 0.8)';
+        c.fillRect(0, 420, canvas.width, 30);
+        c.strokeStyle = '#fff'; c.lineWidth = 4;
+        c.strokeRect(0, 320, 50, 100);
+        c.strokeRect(1150, 320, 50, 100);
+
+        if (!isPaused && gameStarted) {
+            p1.update(); p2.update(); ball.update();
+            ball.collideWith(p1); ball.collideWith(p2);
+            itemsList.forEach(it => it.update(ball));
+        }
+
+        p1.draw(); p2.draw(); ball.draw();
+        itemsList = itemsList.filter(it => it.active);
+        itemsList.forEach(it => it.draw());
+    }
+
+    if (currentKeyDownListener) window.removeEventListener('keydown', currentKeyDownListener);
+    if (currentKeyUpListener) window.removeEventListener('keyup', currentKeyUpListener);
+
+    currentKeyDownListener = (e) => {
+        if (e.key === "Escape" && gameStarted && !isGameOver) {
+            if (isPaused) ResumeGame();
+            else { isPaused = true; document.getElementById('pause-menu').style.display = 'block'; }
+            return;
+        }
+        if (e.key.toLowerCase() === 'a') p1.backwardcon = true;
+        if (e.key.toLowerCase() === 'd') p1.forwardcon = true;
+        if (e.key.toLowerCase() === 'w') p1.jumpcon = true;
+        if (e.key === ' ') p1.kickcon = true;
+        if (e.key === "ArrowLeft") p2.forwardcon = true;
+        if (e.key === "ArrowRight") p2.backwardcon = true;
+        if (e.key === "ArrowUp") p2.jumpcon = true;
+        if (e.key === "Enter") p2.kickcon = true;
+    };
+    currentKeyUpListener = (e) => {
+        if (e.key.toLowerCase() === 'a') p1.backwardcon = false;
+        if (e.key.toLowerCase() === 'd') p1.forwardcon = false;
+        if (e.key === ' ') p1.kickcon = false;
+        if (e.key === "ArrowLeft") p2.forwardcon = false;
+        if (e.key === "ArrowRight") p2.backwardcon = false;
+        if (e.key === "Enter") p2.kickcon = false;
+    };
+    window.addEventListener('keydown', currentKeyDownListener);
+    window.addEventListener('keyup', currentKeyUpListener);
+
+    countdownEl.style.display = 'block';
+    countdownEl.innerText = countdownVal;
+    countdownInterval = setInterval(() => {
+        countdownVal--;
+        if (countdownVal > 0) countdownEl.innerText = countdownVal;
+        else if (countdownVal === 0) countdownEl.innerText = "GO!";
+        else {
+            clearInterval(countdownInterval);
+            countdownEl.style.display = 'none';
+            gameStarted = true;
+            startCounter();
+            animate();
+        }
+    }, 1000);
+}
+
+window.ShowHistory = function () {
+    document.getElementById('match-history').style.display = 'block';
+    window.RenderHistory();
+};
+window.CloseHistory = function () {
+    document.getElementById('match-history').style.display = 'none';
+};
+window.RenderHistory = function () {
+    let history = JSON.parse(localStorage.getItem('headball_history')) || [];
+    let sortBy = document.getElementById('history-sort').value;
+    if (sortBy === 'score') history.sort((a, b) => b.score - a.score);
+    else history.sort((a, b) => b.timestamp - a.timestamp);
+    let tbody = document.getElementById('history-list');
+    tbody.innerHTML = '';
+    history.forEach(item => {
+        let row = document.createElement('tr');
+        row.innerHTML = `<td>${item.date}</td><td>${item.winner}</td><td>${item.details}</td>`;
+        tbody.appendChild(row);
+    });
+};
+    </script>
+</body>
+</html>

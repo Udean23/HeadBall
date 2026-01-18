@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Head Ball - LKS 2023</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="gamemenu" class="vibrant-welcome">
+        <h1 class="vibrant-game-title">HEAD<span>BALL</span></h1>
+        
+        <div class="vibrant-settings-grid">
+            <div class="settings-card card-players">
+                <h3>PLAYER NAMES</h3>
+                <div class="vibrant-input-group">
+                    <input type="text" id="username1" placeholder="PLAYER 1 NAME">
+                    <input type="text" id="username2" placeholder="PLAYER 2 NAME">
+                </div>
+            </div>
+
+            <div class="settings-card card-teams">
+                <h3>CHOOSING TEAM</h3>
+                <div class="vibrant-country-selection">
+                    <div class="country-pick">
+                        <span>P1</span>
+                        <select id="team1" class="vibrant-select">
+                            <option value="">SELECT TEAM</option>
+                            <option value="1">Brazil</option>
+                            <option value="2">England</option>
+                            <option value="3">Germany</option>
+                            <option value="4">Italy</option>
+                            <option value="5">Japan</option>
+                            <option value="6">Netherlands</option>
+                            <option value="7">Portugal</option>
+                            <option value="8">Spain</option>
+                        </select>
+                    </div>
+                    <div class="country-pick">
+                        <span>P2</span>
+                        <select id="team2" class="vibrant-select">
+                            <option value="">SELECT TEAM</option>
+                            <option value="1">Brazil</option>
+                            <option value="2">England</option>
+                            <option value="3">Germany</option>
+                            <option value="4">Italy</option>
+                            <option value="5">Japan</option>
+                            <option value="6">Netherlands</option>
+                            <option value="7">Portugal</option>
+                            <option value="8">Spain</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-card card-difficulty">
+                <h3>DIFFICULTY</h3>
+                <select id="level" class="vibrant-select full-width">
+                    <option value="">SELECT LEVEL</option>
+                    <option value="EASY">EASY (30S)</option>
+                    <option value="MEDIUM">MEDIUM (20S)</option>
+                    <option value="HARD">HARD (15S)</option>
+                </select>
+            </div>
+
+            <div class="settings-card card-ball">
+                <h3>BALL SKIN</h3>
+                <div class="vibrant-radio-group">
+                    <label class="ball-choice">
+                        <input type="radio" name="ball" value="1" checked>
+                        <img src="source/Ball 01.png" width="40" alt="Ball 1">
+                    </label>
+                    <label class="ball-choice">
+                        <input type="radio" name="ball" value="2">
+                        <img src="source/Ball 02.png" width="40" alt="Ball 2">
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="vibrant-actions">
+            <button class="vibrant-btn btn-blue" onclick="ShowInstruction()">INSTRUCTIONS</button>
+            <button class="vibrant-btn btn-orange main-cta" id="playBtn" onclick="PlayGame()" disabled>PLAY GAME</button>
+            <button class="vibrant-btn btn-green" onclick="ShowHistory()">MATCH HISTORY</button>
+        </div>
+    </div>
+
+    <div id="instruction" class="modal-box vibrant-modal">
+        <h2 class="vibrant-title">HOW TO PLAY</h2>
+        <button class="close-btn" onclick="HideInstruction()">×</button>
+        <div class="control">
+            <div class="control-group">
+                <h3>PLAYER 1</h3>
+                <p>MOVE: <span>W, A, S, D</span></p>
+                <p>KICK: <span>SPACE</span></p>
+            </div>
+            <div class="control-separator"></div>
+            <div class="control-group">
+                <h3>PLAYER 2</h3>
+                <p>MOVE: <span>ARROWS</span></p>
+                <p>KICK: <span>ENTER</span></p>
+            </div>
+        </div>
+        <div class="items-guide">
+            <h3>POWER-UPS</h3>
+            <div class="item-list">
+                <div class="item-help"><img src="source/Increase Ball.png" width="20"> SIZE UP</div>
+                <div class="item-help"><img src="source/Decrease Ball.png" width="20"> SIZE DOWN</div>
+                <div class="item-help"><img src="source/Diamond Ice.png" width="20"> FREEZE</div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="game">
+        <div class="hud-vibrant">
+            <div class="hud-left">
+                <div class="avatar-frame">
+                    <img src="source/Flag/Brazil.png" alt="flag1" id="flag1">
+                </div>
+                <div class="hud-info">
+                    <div id="p1name" class="hud-name">PLAYER 1</div>
+                    <div class="hud-score-display" id="score1">0</div>
+                </div>
+            </div>
+
+            <div class="hud-center-timer">
+                <div class="digital-timer">
+                    <div class="timer-label">TIME</div>
+                    <div id="timeroutput">00:00</div>
+                </div>
+            </div>
+
+            <div class="hud-right">
+                <div class="hud-info">
+                    <div id="p2name" class="hud-name">PLAYER 2</div>
+                    <div class="hud-score-display" id="score2">0</div>
+                </div>
+                <div class="avatar-frame">
+                    <img src="source/Flag/England.png" alt="flag2" id="flag2">
+                </div>
+            </div>
+        </div>
+
+        <canvas id="canvas" width="1200" height="600"></canvas>
+        
+        <div id="countdown" class="vibrant-countdown">3</div>
+
+        <div id="pause-menu" class="modal-box vibrant-modal">
+            <h2>PAUSED</h2>
+            <button class="vibrant-btn btn-orange" onclick="ResumeGame()">CONTINUE</button>
+        </div>
+
+        <div id="gameover" class="modal-box vibrant-modal">
+            <h2>GAME OVER</h2>
+            <div class="gameover-stats">
+                <div class="stat-row">WINNER: <span id="winner-name" class="highlight">NAME</span></div>
+                <div class="stat-row">SCORE: <span id="final-score" class="highlight">0 - 0</span></div>
+                <div class="stat-row">MATCH: <span id="final-countries" class="highlight">A vs B</span></div>
+            </div>
+            <div class="modal-actions">
+                <button class="vibrant-btn btn-green" onclick="SaveScore()">SAVE SCORE</button>
+                <button class="vibrant-btn btn-orange" onclick="location.reload()">PLAY AGAIN</button>
+                <button class="vibrant-btn btn-blue" onclick="ShowHistory()">HISTORY</button>
+            </div>
+        </div>
+
+        <div id="match-history" class="modal-box vibrant-modal history-modal">
+            <h2>MATCH HISTORY</h2>
+            <button class="close-btn" onclick="CloseHistory()">×</button>
+            <div class="history-controls">
+                <label>SORT BY:</label>
+                <select id="history-sort" class="vibrant-select" onchange="RenderHistory()">
+                    <option value="date">NEWEST FIRST</option>
+                    <option value="score">HIGHEST SCORE</option>
+                </select>
+            </div>
+            <div class="history-table-wrapper">
+                <table id="history-table">
+                    <thead>
+                        <tr>
+                            <th>DATE</th>
+                            <th>WINNER</th>
+                            <th>SCORE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-list"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
