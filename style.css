@@ -189,7 +189,7 @@ body {
     display: none;
 }
 
-.vibrant-modal { border: 3px solid rgba(255,255,255,0.05); text-align: center; }
+.vibrant-modal { border: 3px solid rgba(255,255,255,0.05); text-align: center; display: none;}
 .vibrant-modal h2 { font-size: 40px; font-weight: 900; color: var(--accent-blue); margin-bottom: 20px; }
 
 .close-btn { 
